@@ -25,18 +25,31 @@ class TracedStatement
 
     protected $exception;
 
+    /**
+     * @param $method
+     * @param array $params
+     */
     public function __construct($method, array $params = array())
     {
         $this->method = $method;
         $this->parameters = $this->checkParameters($params);
     }
 
+    /**
+     * @param null $startTime
+     * @param null $startMemory
+     */
     public function start($startTime = null, $startMemory = null)
     {
         $this->startTime = $startTime ?: microtime(true);
         $this->startMemory = $startMemory ?: memory_get_usage(true);
     }
 
+    /**
+     * @param \Exception|null $exception
+     * @param null $endTime
+     * @param null $endMemory
+     */
     public function end(\Exception $exception = null, $endTime = null, $endMemory = null)
     {
         $this->endTime = $endTime ?: microtime(true);
@@ -86,11 +99,17 @@ class TracedStatement
         return $params;
     }
 
+    /**
+     * @return mixed
+     */
     public function getStartTime()
     {
         return $this->startTime;
     }
 
+    /**
+     * @return mixed
+     */
     public function getEndTime()
     {
         return $this->endTime;
@@ -106,11 +125,17 @@ class TracedStatement
         return $this->duration;
     }
 
+    /**
+     * @return mixed
+     */
     public function getStartMemory()
     {
         return $this->startMemory;
     }
 
+    /**
+     * @return mixed
+     */
     public function getEndMemory()
     {
         return $this->endMemory;

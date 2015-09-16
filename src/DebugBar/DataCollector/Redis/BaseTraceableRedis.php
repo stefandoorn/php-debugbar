@@ -2,62 +2,54 @@
 
 namespace DebugBar\DataCollector\Redis;
 
-use Redis;
-use RedisException;
-
 /**
  * A Redis proxy which traces statements
  */
 abstract class BaseTraceableRedis
 {
 
+    /**
+     * @var \Redis|\Predis\Client
+     */
     protected $redis;
-    private $executedStatements = array();
 
-    public function __construct(Redis $redis)
-    {
-        $this->redis = $redis;
-    }
+    /**
+     * @var array
+     */
+    protected $executedStatements = array();
 
+    /**
+     * Run any function call on the redis object
+     *
+     * @param $name
+     * @param array $args
+     * @return mixed
+     */
     public function __call($name, array $args)
     {
         return $this->profileCall($name, $args);
     }
 
+    /**
+     * Get parameters from redis object
+     *
+     * @param $name
+     * @return mixed
+     */
     public function __get($name)
     {
         return $this->redis->$name;
     }
 
+    /**
+     * Set parameters to redis object
+     *
+     * @param $name
+     * @param $value
+     */
     public function __set($name, $value)
     {
         $this->redis->$name = $value;
-    }
-
-    /**
-     * Profiles a call on a Redis method
-     *
-     * @param string $method
-     * @param string $sql
-     * @param array $args
-     * @return mixed The result of the call
-     */
-    protected function profileCall($method, array $args)
-    {
-        $trace = new TracedStatement($method, $args);
-        $trace->start();
-
-        $ex = null;
-        try {
-            $result = call_user_func_array(array($this->redis, $method), $args);
-        } catch (RedisException $e) {
-            $ex = $e;
-        }
-
-        $trace->end($ex);
-        $this->addExecutedStatement($trace);
-
-        return $result;
     }
 
     /**

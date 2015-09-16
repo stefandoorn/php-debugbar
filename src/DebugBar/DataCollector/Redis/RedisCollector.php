@@ -52,6 +52,9 @@ class RedisCollector extends DataCollector implements Renderable, AssetProvider
         return $this->connections;
     }
 
+    /**
+     * @return array
+     */
     public function collect()
     {
 
@@ -152,6 +155,9 @@ class RedisCollector extends DataCollector implements Renderable, AssetProvider
         );
     }
 
+    /**
+     * @return array
+     */
     public function getAssets()
     {
         return array(

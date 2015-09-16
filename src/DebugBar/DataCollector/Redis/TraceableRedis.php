@@ -11,27 +11,22 @@ use RedisException;
 class TraceableRedis extends BaseTraceableRedis
 {
 
-    private $redis;
-    private $executedStatements = array();
+    /**
+     * Add methods available in \Redis that shouldnt be logged, e.g. passwords and hostnames
+     *
+     * @var array
+     */
+    private static $confidentialCalls = [
+        'connect',
+        'auth',
+    ];
 
+    /**
+     * @param Redis $redis
+     */
     public function __construct(Redis $redis)
     {
         $this->redis = $redis;
-    }
-
-    public function __call($name, array $args)
-    {
-        return $this->profileCall($name, $args);
-    }
-
-    public function __get($name)
-    {
-        return $this->redis->$name;
-    }
-
-    public function __set($name, $value)
-    {
-        $this->redis->$name = $value;
     }
 
     /**
@@ -44,12 +39,28 @@ class TraceableRedis extends BaseTraceableRedis
      */
     protected function profileCall($method, array $args)
     {
+        if(!in_array($method, self::$confidentialCalls)) {
+            return $this->execProfiledCall($method, $args);
+        }
+
+        return $this->execCall($method, $args);
+    }
+
+    /**
+     * Run call to redis object WITH profiling
+     *
+     * @param $method
+     * @param array $args
+     * @return mixed
+     */
+    protected function execProfiledCall($method, array $args)
+    {
         $trace = new TracedStatement($method, $args);
         $trace->start();
 
         $ex = null;
         try {
-            $result = call_user_func_array(array($this->redis, $method), $args);
+            $result = $this->execCall($method, $args);
         } catch (RedisException $e) {
             $ex = $e;
         }
@@ -58,6 +69,18 @@ class TraceableRedis extends BaseTraceableRedis
         $this->addExecutedStatement($trace);
 
         return $result;
+    }
+
+    /**
+     * Run call standalone, can be used when not profiling
+     *
+     * @param $method
+     * @param array $args
+     * @return mixed
+     */
+    protected function execCall($method, array $args)
+    {
+        return call_user_func_array(array($this->redis, $method), $args);
     }
 
 }
