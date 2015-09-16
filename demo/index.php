@@ -33,6 +33,10 @@ render_demo_page(function() {
 <ul>
     <li><a href="pdo.php">PDO demo</a></li>
 </ul>
+<h2>Redis</h2>
+<ul>
+    <li><a href="redis.php">Redis demo</a></li>
+</ul>
 <h2>Bridges</h2>
 <p>(you need to install needed dependencies first, run <code>composer.phar install</code> in each demo folders)</p>
 <ul>

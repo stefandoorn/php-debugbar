@@ -71,6 +71,26 @@ You can even log queries from multiple `PDO` connections:
 
     $debugbar->addCollector($pdoCollector);
 
+## Redis
+
+Logs Redis queries. You need to wrap your `Redis` object into a `DebugBar\DataCollector\Redis\TraceableRedis` object. The example is similar to the PDO example.
+
+    $redis = new DebugBar\DataCollector\Redis\TraceableRedis(new Redis());
+    $debugbar->addCollector(new DebugBar\DataCollector\Redis\RedisCollector($redis));
+
+You can even log queries from multiple `Redis` connections:
+
+    $redisRead  = new DebugBar\DataCollector\Redis\TraceableRedis(new Redis());
+    $redisWrite = new DebugBar\DataCollector\Redis\TraceableRedis(new Redis());
+
+    $redisCollector = new DebugBar\DataCollector\Redis\RedisCollector();
+    $redisCollector->addConnection($redisRead, 'read-db');
+    $redisCollector->addConnection($redisWrite, 'write-db');
+
+    $debugbar->addCollector($redisCollector);
+
+Please note that currently only the (PHP extension)[https://github.com/phpredis/phpredis] is supported. Support for Predis will be added later.
+
 ## RequestData
 
 Collects the data of PHP's global variables

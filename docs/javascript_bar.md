@@ -143,6 +143,7 @@ Data collectors related widgets:
  - `TimelineWidget`: for the `TimeDataCollector`
  - `ExceptionWidget`: for the `ExceptionCollector`
  - `SQLQueriesWidget`: for the `PDOCollector`
+ - `RedisQueriesWidget`: for the `RedisCollector`
  - `TemplatesWidget`: for the `TwigCollector`
 
 ## Custom tabs and indicators
